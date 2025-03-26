@@ -1,6 +1,8 @@
 # AdPlatformsApi
 В проектах используется NET 8.0
+
 Проект AdPlatformsApi - проект ASP.NET Core Web Api
+
 Проект AdPlatformsApi.Tests - проект юнит-тестов
 
 Для запуска веб-сервиса - открыть решение (.sln), запустить проект AdPlatformsApi в любой конфигурации (Release/Debug) с профилем "http". 
