@@ -17,7 +17,23 @@ namespace AdPlatforms.Classes
         /// <returns></returns>
         public IEnumerable<string> GetPlatforms(string location)
         {
-            return platsLocationsDict.TryGetValue(location, out var result) ? result : Array.Empty<string>();
+            List<string> plats = new List<string>();
+            var tempLoc = location;
+
+            // Цикл - пока tempLoc не будет пустой строкой
+            while (!string.IsNullOrWhiteSpace(tempLoc))
+            {
+                bool foundLoc = platsLocationsDict.TryGetValue(tempLoc, out var result);
+                if (foundLoc)
+                    plats.AddRange(result!);
+
+                // Берем локацию на один уровень выше и сохраняем в tempLoc
+                int lastSlash = tempLoc.LastIndexOf('/');
+                tempLoc = lastSlash > 0 ? tempLoc[..lastSlash] : string.Empty;
+            }
+
+            //Удаляем повторы и возвращаем
+            return plats.Distinct();
         }
 
         /// <summary>
@@ -47,11 +63,10 @@ namespace AdPlatforms.Classes
                 var locStr = parts[1];
 
                 var locationMatches = locationRegex.Matches(locStr);
-                if (locationMatches.Count > 0)
+                if (locationMatches != null && locationMatches.Count > 0)
                 {
-                    // Для каждой локации в найденных метчах 
-                    foreach (Match loc in locationMatches)
-                        AddDataToDict(platName, loc.Value, tempPlatsLocationsDict);
+                    //Добавляем платформы и локации в словарь
+                    AddDataToDict(platName, locationMatches, tempPlatsLocationsDict);
                 }
                 else
                     throw new FormatException($"Ошибка при обработке текстового файла - строка №{i} не содержит локаций");
@@ -61,22 +76,16 @@ namespace AdPlatforms.Classes
             return platsLocationsDict.Keys.Count;
         }
 
-        private void AddDataToDict(string platName, string loc, Dictionary<string, HashSet<string>> dict)
+        private void AddDataToDict(string platName, MatchCollection locations, Dictionary<string, HashSet<string>> dict)
         {
-            var tempLoc = loc;
-            // Цикл - пока tempLoc не будет пустой строкой
-            while (!string.IsNullOrWhiteSpace(tempLoc))
+            foreach (Match loc in locations)
             {
                 // Если в словаре нет записи с таким ключом - добавляем запись в словарь
-                if (!dict.ContainsKey(tempLoc))
-                    dict.Add(tempLoc, new HashSet<string>());
+                if (!dict.ContainsKey(loc.Value))
+                    dict.Add(loc.Value, new HashSet<string>());
 
                 // Добавляем по ключу tempLoc новую платформу в хэш-таблицу
-                dict[tempLoc].Add(platName);
-
-                // Берем локацию на один уровень выше и сохраняем в tempLoc
-                int lastSlash = tempLoc.LastIndexOf('/');
-                tempLoc = lastSlash > 0 ? tempLoc[..lastSlash] : string.Empty;
+                dict[loc.Value].Add(platName);
             }
         }
     }

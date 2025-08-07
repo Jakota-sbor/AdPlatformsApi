@@ -60,8 +60,8 @@ namespace AdPlatformsApi.Tests
         [Test, Order(2)]
         public async Task GetPlatforms_ExistLocation_ReturnsPlatforms()
         {
-            var location = "/ru/svrd";
-            var expectedPlatforms = new string[] { "Ревдинский рабочий", "Крутая реклама" };
+            var location = "/ru/svrd/revda";
+            var expectedPlatforms = new string[] { "Яндекс.Директ", "Ревдинский рабочий", "Крутая реклама" };
             var uri = endPoints[EndPoints.GetPlatforms] + "?location=" + location;
 
             var response = await client.GetAsync(uri);
@@ -82,7 +82,7 @@ namespace AdPlatformsApi.Tests
         [Test, Order(3)]
         public async Task GetPlatforms_NotExistLocation_ReturnsNotFound()
         {
-            var location = "/ru/lenobl";
+            var location = "/test";
             var uri = endPoints[EndPoints.GetPlatforms] + "?location=" + location;
 
             var response = await client.GetAsync(uri);
